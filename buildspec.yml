@@ -1,1 +1,38 @@
+version: 0.2
 
+phases:
+  install:
+    runtime-versions:
+      python: 3.10
+    commands:
+      - echo "Installing dependencies..."
+      - pip install --upgrade pip
+      - pip install -r requirements.txt
+      - pip install aws-sam-cli
+
+  build:
+    commands:
+      - echo "Running tests..."
+      - pytest -q
+      - echo "Building SAM app..."
+      - sam build
+
+  post_build:
+    commands:
+      - echo "Deploying SAM app..."
+      - sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name compliment-bot --capabilities CAPABILITY_IAM
+      - echo "Tagging production commit..."
+      - DATE=$(date -u +'%Y-%m-%d')
+      - TAG="prod-$DATE"
+      - git config user.email "aws-codebuild@example.com"
+      - git config user.name "CodeBuild"
+      - git tag $TAG
+      - git push origin $TAG
+
+artifacts:
+  files:
+    - template.yaml
+    - lambda_function.py
+    - requirements.txt
+    - README.md
+    - tests/**/*
