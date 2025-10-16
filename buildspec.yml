@@ -19,4 +19,4 @@ phases:
   post_build:
     commands:
       - echo "Deploying new Lambda version..."
-      - aws lambda update-function-code --function-name TwilioBotLambda --zip-file fileb://bot.zip
+      - aws lambda update-function-code --function-name TwilioComplimentBot --zip-file fileb://bot.zip
